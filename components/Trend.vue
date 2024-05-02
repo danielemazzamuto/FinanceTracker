@@ -12,7 +12,7 @@
         class="h-8 w-full"
         v-if="loading"
       />
-      <div v-else>{{ amount }}</div>
+      <div v-else>{{ currency }}</div>
     </div>
 
     <div>
@@ -51,6 +51,8 @@ const props = defineProps({
   color: String,
   loading: Boolean,
 });
+
+const { currency } = useCurrency(props.amount);
 
 const trendingUp = computed(() => props.amount > props.lastAmount);
 
