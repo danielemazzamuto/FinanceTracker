@@ -5,12 +5,16 @@
     <div class="flex items-center justify-between">
       <div class="flex items-center space-x-1">
         <UIcon
-          name="i-heroicons-arrow-up-right"
-          class="text-green-600"
+          :name="icon"
+          :class="iconColor"
         />
-        <p>Salary</p>
+        <p>{{ props.transaction.description }}</p>
       </div>
-      <UBadge color="white">Category</UBadge>
+      <UBadge
+        color="white"
+        v-if="props.transaction.category"
+        >{{ props.transaction.category }}</UBadge
+      >
     </div>
     <div class="flex items-center justify-end space-x-2">
       <div>{{ currency }}</div>
@@ -30,8 +34,12 @@
   </div>
 </template>
 
-<script setup lang="ts">
-const { currency } = useCurrency(3000);
+<script setup>
+const props = defineProps({
+  transaction: Object,
+});
+
+const { currency } = useCurrency(props.transaction.amount);
 const options = [
   [
     {
@@ -46,4 +54,14 @@ const options = [
     },
   ],
 ];
+
+const isIncome = computed(() => props.transaction.type === 'Income');
+
+const icon = computed(() =>
+  isIncome.value ? 'i-heroicons-arrow-up-right' : 'i-heroicons-arrow-down-left'
+);
+
+const iconColor = computed(() =>
+  isIncome.value ? 'text-green-600' : 'text-red-600'
+);
 </script>
