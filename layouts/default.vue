@@ -30,9 +30,6 @@ useHead({
 /* Set the font family for the entire site */
 body {
   font-family: 'Inter';
-}
-/* Set the background color for the entire site */
-body {
-  @apply dark:bg-gray-900;
+  @apply dark:bg-gray-900 bg-white;
 }
 </style>

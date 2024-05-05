@@ -50,7 +50,7 @@ const options = [
     {
       label: 'Delete',
       icon: 'i-heroicons-trash-20-solid',
-      click: () => console.log('Delete'),
+      click: () => deleteTransaction(),
     },
   ],
 ];
@@ -64,4 +64,8 @@ const icon = computed(() =>
 const iconColor = computed(() =>
   isIncome.value ? 'text-green-600' : 'text-red-600'
 );
+
+const deleteTransaction = () => {
+  console.log('Delete transaction');
+};
 </script>
