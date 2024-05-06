@@ -27,6 +27,7 @@
             color="white"
             variant="ghost"
             trailing-icon="i-heroicons-ellipsis-horizontal"
+            :loading="isLoading"
           />
         </UDropdown>
       </div>
@@ -39,7 +40,16 @@ const props = defineProps({
   transaction: Object,
 });
 
+const emit = defineEmits(['transactionDeleted']);
+
+const supabase = useSupabaseClient();
+
+const isLoading = ref(false);
+// toast is a NUXT UI composable that shows a toast notification
+const toast = useToast();
+
 const { currency } = useCurrency(props.transaction.amount);
+
 const options = [
   [
     {
@@ -65,7 +75,24 @@ const iconColor = computed(() =>
   isIncome.value ? 'text-green-600' : 'text-red-600'
 );
 
-const deleteTransaction = () => {
-  console.log('Delete transaction');
+const deleteTransaction = async () => {
+  isLoading.value = true;
+  try {
+    await supabase.from('transactions').delete().eq('id', props.transaction.id);
+    toast.add({
+      title: 'Transaction Deleted',
+      icon: 'i-heroicons-check-circle',
+      color: 'green',
+    });
+    emit('transactionDeleted', props.transaction.id);
+  } catch (error) {
+    toast.add({
+      title: 'Transaction Could not be Deleted',
+      icon: 'i-heroicons-exclamation-circle',
+      color: 'red',
+    });
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
