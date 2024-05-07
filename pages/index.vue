@@ -15,14 +15,14 @@
     <Trend
       color="green"
       title="Income"
-      :amount="4000"
+      :amount="incomeTotSum"
       :last-amount="4000"
       :loading="isLoading"
     />
     <Trend
       color="red"
       title="Expense"
-      :amount="4000"
+      :amount="expenseTotSum"
       :last-amount="2800"
       :loading="isLoading"
     />
@@ -71,19 +71,17 @@
 
 <script setup>
 import { transactionViewOptions } from '~/constants';
+const supabase = useSupabaseClient();
 
 const selectedView = ref(transactionViewOptions[1]);
-
 const transactions = ref([]);
+const isLoading = ref(false);
 
 const refreshTransactions = async () => {
   transactions.value = await fetchTransactions();
 };
 
-const isLoading = ref(false);
-
-const supabase = useSupabaseClient();
-
+// we define a function to fetch the transactions from the database
 const fetchTransactions = async () => {
   isLoading.value = true;
   try {
@@ -97,8 +95,25 @@ const fetchTransactions = async () => {
     isLoading.value = false;
   }
 };
-
+// we call the function to fetch the transactions
 await refreshTransactions();
+
+const income = computed(() =>
+  transactions.value.filter((t) => t.type === 'Income')
+);
+const expense = computed(() =>
+  transactions.value.filter((t) => t.type === 'Expense')
+);
+const incomeCount = computed(() => income.value.length);
+
+const expenseCount = computed(() => expense.value.length);
+
+const incomeTotSum = computed(() =>
+  income.value.reduce((sum, t) => sum + t.amount, 0)
+);
+const expenseTotSum = computed(() =>
+  expense.value.reduce((sum, t) => sum - t.amount, 0)
+);
 
 const transactionsGroupedByDate = computed(() => {
   const grouped = {};
