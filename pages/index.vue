@@ -42,6 +42,27 @@
     />
   </section>
 
+  <section class="flex justify-between mb-10">
+    <div>
+      <h2 class="text-2xl font-extrabold">Transactions</h2>
+      <div class="text-gray-500 dark:text-gray-400">
+        <p>
+          You have {{ incomeCount }} incomes and {{ expenseCount }} expenses.
+        </p>
+      </div>
+    </div>
+    <div>
+      <UButton
+        icon="i-heroicons-plus-circle"
+        color="white"
+        variant="solid"
+        label="Add"
+        @click="isOpen = true"
+      />
+      <TransactionModal v-model="isOpen" />
+    </div>
+  </section>
+
   <section v-if="!isLoading">
     <div
       v-for="(transactionsOnDay, date) in transactionsGroupedByDate"
@@ -76,6 +97,7 @@ const supabase = useSupabaseClient();
 const selectedView = ref(transactionViewOptions[1]);
 const transactions = ref([]);
 const isLoading = ref(false);
+const isOpen = ref(false);
 
 const refreshTransactions = async () => {
   transactions.value = await fetchTransactions();

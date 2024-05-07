@@ -87,7 +87,7 @@ const deleteTransaction = async () => {
     emit('transactionDeleted', props.transaction.id);
   } catch (error) {
     toast.add({
-      title: 'Transaction Could not be Deleted',
+      title: 'Transaction could not be deleted',
       icon: 'i-heroicons-exclamation-circle',
       color: 'red',
     });
