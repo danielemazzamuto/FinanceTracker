@@ -7,7 +7,7 @@
         :schema="schema"
         :state="state"
         ref="form"
-        @submit="onSubmit"
+        @submit="addTransaction"
       >
         <UFormGroup
           label="Type"
@@ -50,6 +50,7 @@
 
         <UFormGroup
           label="Description"
+          required
           hint="A short description of the transaction"
           name="description"
           class="mb-4"
@@ -78,6 +79,7 @@
           color="black"
           variant="solid"
           label="Save"
+          :isLoading="isLoading"
         />
       </UForm>
     </UCard>
@@ -88,14 +90,20 @@
 import { transactionCategories, transactionTypes } from '~/constants';
 import { z } from 'zod';
 
-const isOpen = defineModel();
+const supabase = useSupabaseClient();
+const toast = useToast();
+
+const emit = defineEmits(['transactionSaved']);
+
+const isOpen = defineModel('isOpen');
 const form = ref(null);
+const isLoading = ref(false);
 
 const schema = z.object({
   type: z.string(),
   amount: z.number().positive('Amount must be greater than 0'),
   created_at: z.string(),
-  description: z.string().optional(),
+  description: z.string(),
   category: z.string(),
 });
 
@@ -119,10 +127,34 @@ const resetForm = () => {
   form.value.clear();
 };
 
-const onSubmit = async () => {
+const addTransaction = async () => {
+  // check if the form has any validation errors
   if (form.value.errors.length) return;
-  console.log('stored');
-  resetForm();
-  isOpen.value = false;
+  isLoading.value = true;
+
+  try {
+    console.log(state);
+    const { error } = await supabase.from('transactions').upsert(state);
+    if (!error) {
+      toast.add({
+        title: 'Transaction saved',
+        icon: 'i-heroicons-check-circle',
+      });
+      resetForm();
+      isOpen.value = false;
+      emit('transactionSaved');
+      return;
+    }
+    throw error;
+  } catch (error) {
+    toast.add({
+      title: 'Transaction not saved',
+      description: error.message,
+      icon: 'i-heroicons-exclamation-circle',
+      color: 'red',
+    });
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
