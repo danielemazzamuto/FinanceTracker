@@ -95,65 +95,23 @@
 
 <script setup>
 import { transactionViewOptions } from '~/constants';
-const supabase = useSupabaseClient();
 
 const selectedView = ref(transactionViewOptions[1]);
-const transactions = ref([]);
-const isLoading = ref(false);
+
 const isOpen = ref(false);
 
-const refreshTransactions = async () => {
-  transactions.value = await fetchTransactions();
-};
+const {
+  isLoading,
+  refreshTransactions,
+  transactions: {
+    incomeCount,
+    expenseCount,
+    incomeTotSum,
+    expenseTotSum,
+    grouped: { byDate: transactionsGroupedByDate },
+  },
+} = useFetchTransactions();
 
-// we define a function to fetch the transactions from the database
-const fetchTransactions = async () => {
-  isLoading.value = true;
-  try {
-    const { data } = await useAsyncData('transactions', async () => {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select()
-        .order('created_at', { ascending: false });
-      if (error) return [];
-      return data;
-    });
-    return data.value;
-  } finally {
-    isLoading.value = false;
-  }
-};
 // we call the function to fetch the transactions
 await refreshTransactions();
-
-const income = computed(() =>
-  transactions.value.filter((t) => t.type === 'Income')
-);
-const expense = computed(() =>
-  transactions.value.filter((t) => t.type === 'Expense')
-);
-const incomeCount = computed(() => income.value.length);
-
-const expenseCount = computed(() => expense.value.length);
-
-const incomeTotSum = computed(() =>
-  income.value.reduce((sum, t) => sum + t.amount, 0)
-);
-const expenseTotSum = computed(() =>
-  expense.value.reduce((sum, t) => sum - t.amount, 0)
-);
-
-const transactionsGroupedByDate = computed(() => {
-  const grouped = {};
-  for (const transaction of transactions.value) {
-    const date = new Date(transaction.created_at).toISOString().split('T')[0];
-    // we check if the date is already in the object, otherwise we create an empty array
-    if (!grouped[date]) {
-      grouped[date] = [];
-    }
-    // we push the transaction to the array
-    grouped[date].push(transaction);
-  }
-  return grouped;
-});
 </script>

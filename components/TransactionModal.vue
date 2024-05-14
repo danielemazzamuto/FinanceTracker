@@ -133,7 +133,6 @@ const addTransaction = async () => {
   isLoading.value = true;
 
   try {
-    console.log(state);
     const { error } = await supabase.from('transactions').upsert(state);
     if (!error) {
       toast.add({
