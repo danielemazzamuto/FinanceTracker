@@ -8,7 +8,14 @@ type Transaction = {
   category?: string;
 };
 
-export const useFetchTransactions = () => {
+interface Period {
+  value: {
+    from: Date;
+    to: Date;
+  };
+}
+
+export const useFetchTransactions = (period: Period) => {
   const supabase = useSupabaseClient();
   const transactions = ref<Transaction[]>([]);
   const isLoading = ref<Boolean>(false);
@@ -33,14 +40,20 @@ export const useFetchTransactions = () => {
   const fetchTransactions = async <Transaction>() => {
     isLoading.value = true;
     try {
-      const { data } = await useAsyncData('transactions', async () => {
-        const { data, error } = await supabase
-          .from('transactions')
-          .select()
-          .order('created_at', { ascending: false });
-        if (error) return [];
-        return data as Transaction[];
-      });
+      // the key must be unique for each period to avoid conflicts in the cache, so we use the period dates
+      const { data } = await useAsyncData(
+        `transactions-${period.value.from.toDateString()}-${period.value.to.toDateString()}`,
+        async () => {
+          const { data, error } = await supabase
+            .from('transactions')
+            .select()
+            .gte('created_at', period.value.from.toISOString())
+            .lte('created_at', period.value.to.toISOString())
+            .order('created_at', { ascending: false });
+          if (error) return [];
+          return data as Transaction[];
+        }
+      );
       return data.value as Transaction[];
     } finally {
       isLoading.value = false;
@@ -50,6 +63,14 @@ export const useFetchTransactions = () => {
   const refreshTransactions = async () => {
     transactions.value = await fetchTransactions<Transaction>();
   };
+
+  // we watch the period value and refresh the transactions when it changes
+  // we use the immediate option to fetch the transactions when the component is created
+  watch(
+    () => period.value,
+    async () => await refreshTransactions(),
+    { immediate: true }
+  );
 
   const transactionsGroupedByDate = computed(() => {
     const grouped: { [key: string]: Transaction[] } = {}; // Add index signature to the grouped object
