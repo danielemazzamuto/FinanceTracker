@@ -8,27 +8,27 @@ import {
   endOfDay,
 } from 'date-fns';
 
-type period = {
+type Period = {
   value: string;
 };
 
-export const useSelectedTimePeriod = (period: period): {} => {
+export const useSelectedTimePeriod = (period: Period): {} => {
   const current = computed(() => {
     switch (period.value) {
       case 'Yearly':
         return {
           from: startOfYear(new Date()),
-          to: new Date(),
+          to: endOfYear(new Date()),
         };
       case 'Monthly':
         return {
           from: startOfMonth(new Date()),
-          to: new Date(),
+          to: endOfMonth(new Date()),
         };
       case 'Daily':
         return {
           from: startOfDay(new Date()),
-          to: new Date(),
+          to: endOfDay(new Date()),
         };
     }
   });

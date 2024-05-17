@@ -61,7 +61,7 @@
       />
       <TransactionModal
         v-model:isOpen="isOpen"
-        @transactionSaved="refreshTransactions"
+        @transactionSaved="refreshTransactions()"
       />
     </div>
   </section>
@@ -112,11 +112,16 @@ const {
     grouped: { byDate: transactionsGroupedByDate },
   },
 } = useFetchTransactions(current);
+//await refreshTransactions();
 
 const {
+  refreshTransactions: refreshPrevTransactions,
   transactions: {
     incomeTotSum: prevIncomeTotSum,
     expenseTotSum: prevExpenseTotSum,
   },
-} = useFetchTransactions(current);
+} = useFetchTransactions(previous);
+
+await refreshTransactions();
+await refreshPrevTransactions();
 </script>

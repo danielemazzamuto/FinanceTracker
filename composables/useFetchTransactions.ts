@@ -34,7 +34,7 @@ export const useFetchTransactions = (period: Period) => {
     income.value.reduce((sum, t) => sum + t.amount, 0)
   );
   const expenseTotSum = computed(() =>
-    expense.value.reduce((sum, t) => sum - t.amount, 0)
+    expense.value.reduce((sum, t) => sum + t.amount, 0)
   );
 
   const fetchTransactions = async <Transaction>() => {
@@ -66,11 +66,9 @@ export const useFetchTransactions = (period: Period) => {
 
   // we watch the period value and refresh the transactions when it changes
   // we use the immediate option to fetch the transactions when the component is created
-  watch(
-    () => period.value,
-    async () => await refreshTransactions(),
-    { immediate: true }
-  );
+  watch(period, async () => {
+    await refreshTransactions();
+  });
 
   const transactionsGroupedByDate = computed(() => {
     const grouped: { [key: string]: Transaction[] } = {}; // Add index signature to the grouped object
