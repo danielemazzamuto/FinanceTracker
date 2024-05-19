@@ -1,4 +1,8 @@
-export const useCurrency = (amount: number) => {
+interface Amount {
+  value: number;
+}
+
+export const useCurrency = (amount: Amount) => {
   const currency = computed<string>((): string => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',

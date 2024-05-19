@@ -6,7 +6,7 @@
     >
       Finance Tracker
     </NuxtLink>
-    <div>
+    <div v-if="user">
       <UAvatar
         src="https://avatars.githubusercontent.com/u/739984?v=4"
         alt="Avatar"
@@ -14,3 +14,17 @@
     </div>
   </header>
 </template>
+
+<script setup>
+const user = useSupabaseUser();
+
+watch(
+  user,
+  (user) => {
+    if (user) {
+      console.log(user);
+    }
+  },
+  { immediate: true }
+);
+</script>
