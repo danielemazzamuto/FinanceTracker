@@ -30,8 +30,11 @@
     </form>
   </UCard>
 
-  <UCard v-else>
-    <template #header> Email has been sent. </template>
+  <UCard
+    class="text-center"
+    v-else
+  >
+    <template #header> Email has been sent!</template>
 
     <div class="text-center">
       <p class="mb-4">
@@ -57,7 +60,7 @@ const handleSubmit = async () => {
   try {
     const { data, error } = await supabase.auth.signInWithOtp({
       email: email.value,
-      options: { redirectTo: 'http://localhost:3000/confirm' },
+      options: { emailRedirectTo: 'http://localhost:3000/confirm' },
     });
 
     if (error) {

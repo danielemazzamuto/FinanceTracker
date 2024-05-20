@@ -63,7 +63,6 @@
 
         <UFormGroup
           label="Category"
-          required
           name="category"
           class="mb-4"
         >
@@ -104,7 +103,7 @@ const schema = z.object({
   amount: z.number().positive('Amount must be greater than 0'),
   created_at: z.string(),
   description: z.string(),
-  category: z.string(),
+  category: z.optional(),
 });
 
 const initialState = reactive({
