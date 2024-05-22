@@ -46,7 +46,7 @@ const supabase = useSupabaseClient();
 
 const isLoading = ref(false);
 // toast is a NUXT UI composable that shows a toast notification
-const toast = useToast();
+const toast = useAppToast();
 
 const { currency } = useCurrency(props.transaction.amount);
 
@@ -79,17 +79,13 @@ const deleteTransaction = async () => {
   isLoading.value = true;
   try {
     await supabase.from('transactions').delete().eq('id', props.transaction.id);
-    toast.add({
+    toast.toastSuccess({
       title: 'Transaction Deleted',
-      icon: 'i-heroicons-check-circle',
-      color: 'green',
     });
     emit('transactionDeleted', props.transaction.id);
   } catch (error) {
-    toast.add({
+    toast.toastError({
       title: 'Transaction could not be deleted',
-      icon: 'i-heroicons-exclamation-circle',
-      color: 'red',
     });
   } finally {
     isLoading.value = false;
