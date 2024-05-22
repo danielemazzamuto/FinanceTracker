@@ -50,7 +50,7 @@
 const success = ref(false);
 const email = ref('');
 const pending = ref(false);
-const toast = useAppToast();
+const { toastSuccess, toastError } = useAppToast();
 const supabase = useSupabaseClient();
 
 useRedirectIfAuthenticated();
@@ -66,13 +66,13 @@ const handleSubmit = async () => {
     if (error) {
       throw error;
     }
-    toast.toastSuccess({
+    toastSuccess({
       title: 'Email sent',
     });
     success.value = true;
     return data;
   } catch (error) {
-    toast.toastError({
+    toastError({
       title: 'Error Authenticating',
       description: error.message,
     });

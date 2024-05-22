@@ -90,7 +90,7 @@ import { transactionCategories, transactionTypes } from '~/constants';
 import { z } from 'zod';
 
 const supabase = useSupabaseClient();
-const toast = useAppToast();
+const { toastSuccess, toastError } = useAppToast();
 
 const emit = defineEmits(['transactionSaved']);
 
@@ -134,7 +134,7 @@ const addTransaction = async () => {
   try {
     const { error } = await supabase.from('transactions').upsert(state);
     if (!error) {
-      toast.toastSuccess({
+      toastSuccess({
         title: 'Transaction saved',
       });
       resetForm();
@@ -144,7 +144,7 @@ const addTransaction = async () => {
     }
     throw error;
   } catch (error) {
-    toast.toastError({
+    toastError({
       title: 'Transaction not saved',
       description: error.message,
     });
