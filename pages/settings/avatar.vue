@@ -63,14 +63,38 @@ const saveAvatar = async () => {
   const fileExtension = file.name.split('.').pop();
   // 3. Generate the new filename
   const fileName = `${Math.random()}.${fileExtension}`;
-
+  console.log(user.value.user_metadata);
   try {
     uploading.value = true;
+
     // 1. Grab the current avatar URL
+    const currentAvatar = user.value.user_metadata?.avatar_url;
+
     // 2. Upload the image to avatars bucket
+    const { error } = await supabase.storage
+      .from('avatars')
+      .upload(fileName, file);
+
+    if (error) throw error;
+
     // 3. Update the user metadata with the avatar URL
+    await supabase.auth.updateUser({
+      data: {
+        avatar_url: fileName,
+      },
+    });
+
     // 4. (OPTIONALLY) remove the old avatar file
+    if (currentAvatar) {
+      const { data, error } = await supabase.storage
+        .from('avatars')
+        .remove([currentAvatar]);
+      console.log('remove:', data);
+      if (error) throw error;
+    }
+
     // 5. Reset the file input
+    fileInput.value.input.value = '';
 
     toastSuccess({
       title: 'Avatar uploaded',
