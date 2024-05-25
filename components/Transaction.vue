@@ -29,6 +29,11 @@
             trailing-icon="i-heroicons-ellipsis-horizontal"
             :loading="isLoading"
           />
+          <TransactionModal
+            v-model="isOpen"
+            :transaction="props.transaction"
+            @transactionSaved="emit('transactionEdited')"
+          />
         </UDropdown>
       </div>
     </div>
@@ -40,22 +45,22 @@ const props = defineProps({
   transaction: Object,
 });
 
-const emit = defineEmits(['transactionDeleted']);
+const emit = defineEmits(['transactionDeleted', 'transactionEdited']);
 
 const supabase = useSupabaseClient();
-
-const isLoading = ref(false);
 // toast is a NUXT UI composable that shows a toast notification
 const { toastSuccess, toastError } = useAppToast();
-
 const { currency } = useCurrency(props.transaction.amount);
+
+const isOpen = ref(false);
+const isLoading = ref(false);
 
 const options = [
   [
     {
       label: 'Edit',
       icon: 'i-heroicons-pencil-square-20-solid',
-      click: () => console.log('Edit'),
+      click: () => (isOpen.value = true),
     },
     {
       label: 'Delete',
