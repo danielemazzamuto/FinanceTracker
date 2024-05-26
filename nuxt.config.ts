@@ -6,4 +6,9 @@ export default defineNuxtConfig({
     // redirect to login page if user is not authenticated
     redirect: true,
   },
+  runtimeConfig: {
+    public: {
+      baseUrl: process.env.BASE_URL ?? 'http://localhost:3000',
+    },
+  },
 });

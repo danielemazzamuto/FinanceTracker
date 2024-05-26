@@ -3,7 +3,7 @@ type Transaction = {
   type: 'Income' | 'Expense' | 'Investment' | 'Savings';
   amount: number;
   description: string;
-  date: Date;
+  date: string;
   created_at: Date;
   category?: string;
 };
@@ -73,7 +73,7 @@ export const useFetchTransactions = (period: Period) => {
   const transactionsGroupedByDate = computed(() => {
     const grouped: { [key: string]: Transaction[] } = {}; // Add index signature to the grouped object
     for (const transaction of transactions.value) {
-      const date = new Date(transaction.created_at).toISOString().split('T')[0];
+      const date = transaction.created_at.split('T')[0];
       // we check if the date is already in the object, otherwise we create an empty array
       if (!grouped[date]) {
         grouped[date] = [];
